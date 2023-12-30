@@ -1,53 +1,56 @@
 import React from "react";
 import axios from "axios";
 
-
 const URL = "http://localhost:9000/api/todos";
 
 export default class App extends React.Component {
   state = {
     todos: [],
-    toDoInput: '',
+    error: "",
+    toDoInput: "",
   };
 
-    onToDoInputChange = evt => {
-      const { value } = evt.target
-      this.setState({ ...this.state, toDoInput: value })
-    }
+  onToDoInputChange = (evt) => {
+    const { value } = evt.target;
+    this.setState({ toDoInput: value });
+  };
 
-    resetForm = () =>  this.setState({ ...this.state, toDoInput: '' }) 
-    
-    axiosError = () =>  this.setState({ ...this.state, error: err.response.data.message })
+  resetForm = () => {
+    this.setState({ toDoInput: "" });
+  };
 
-    postNewTodo = () => {
-      axios.post(URL, { name: this.state.toDoInput })
-      .then( res => {
-        this.fetchAllTodos()
-        this.resetForm()
+  axiosError = (err) => {
+    this.setState({ ...this.state, error: err.response.data.message });
+  };
+
+  postNewTodo = () => {
+    axios
+      .post(URL, { name: this.state.toDoInput })
+      .then((res) => {
+        this.fetchAllTodos();
+        this.resetForm();
       })
-      .catch((err) => {
-        this.axiosError()
-      });
-    }
-    onTodoFormSubmit = evt => {
-      evt.preventDefault()
-      this.postNewTodo()
-    }
+      .catch(this.axiosError);
+  };
+
+  onTodoFormSubmit = (evt) => {
+    evt.preventDefault();
+    this.postNewTodo();
+  };
 
   fetchAllTodos = () => {
     axios
       .get(URL)
       .then((res) => {
-        this.setState({ ...this.state, todos: res.data.data });
+        this.setState({ ...this.state, todos: res.data.data, error: "" });
       })
-      .catch(
-        this.axiosError()
-        );
+      .catch(this.axiosError);
   };
 
   componentDidMount() {
     this.fetchAllTodos();
   }
+
   render() {
     return (
       <div>
@@ -63,9 +66,16 @@ export default class App extends React.Component {
         </div>
 
         <form onSubmit={this.onTodoFormSubmit}>
-         <input value={this.state.toDoInput} onChange={this.onToDoInputChange} type="text" placeholder="add here"></input>
-          <button>Add</button>
-          <button>Reset</button>
+          <input
+            value={this.state.toDoInput}
+            onChange={this.onToDoInputChange}
+            type="text"
+            placeholder="add here"
+          />
+          <button type="submit">Add</button>
+          <button type="button" onClick={this.resetForm}>
+            Reset
+          </button>
         </form>
       </div>
     );
