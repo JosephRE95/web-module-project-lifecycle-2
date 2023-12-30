@@ -1,13 +1,20 @@
 import React from "react";
 import axios from "axios";
-import { response } from "msw";
+
 
 const URL = "http://localhost:9000/api/todos";
 
 export default class App extends React.Component {
   state = {
     todos: [],
+    toDoInput: '',
   };
+
+    onToDoInputChange = evt => {
+      const { value } = evt.target
+      this.setState({ ...this.state, toDoInput: value })
+    }
+
 
   fetchAllTodos = () => {
     axios
@@ -38,8 +45,7 @@ export default class App extends React.Component {
         </div>
 
         <form>
-          <input></input>
-          <input></input>
+\          <input value={this.state.toDoInput} onChange={this.onToDoInputChange} type="text" placeholder="add here"></input>
           <button>Clear Completed</button>
         </form>
       </div>
