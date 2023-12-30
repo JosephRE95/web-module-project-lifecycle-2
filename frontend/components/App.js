@@ -15,14 +15,18 @@ export default class App extends React.Component {
       this.setState({ ...this.state, toDoInput: value })
     }
 
+    resetForm = () =>  this.setState({ ...this.state, toDoInput: '' }) 
+    
+    axiosError = () =>  this.setState({ ...this.state, error: err.response.data.message })
+
     postNewTodo = () => {
       axios.post(URL, { name: this.state.toDoInput })
       .then( res => {
         this.fetchAllTodos()
-        this.setState({ ...this.state, toDoInput: '' })
+        this.resetForm()
       })
       .catch((err) => {
-        this.setState({ ...this.state, error: err.response.data.message });
+        this.axiosError()
       });
     }
     onTodoFormSubmit = evt => {
@@ -36,9 +40,9 @@ export default class App extends React.Component {
       .then((res) => {
         this.setState({ ...this.state, todos: res.data.data });
       })
-      .catch((err) => {
-        this.setState({ ...this.state, error: err.response.data.message });
-      });
+      .catch(
+        this.axiosError()
+        );
   };
 
   componentDidMount() {
@@ -59,8 +63,9 @@ export default class App extends React.Component {
         </div>
 
         <form onSubmit={this.onTodoFormSubmit}>
-\          <input value={this.state.toDoInput} onChange={this.onToDoInputChange} type="text" placeholder="add here"></input>
-          <button>Clear Completed</button>
+         <input value={this.state.toDoInput} onChange={this.onToDoInputChange} type="text" placeholder="add here"></input>
+          <button>Add</button>
+          <button>Reset</button>
         </form>
       </div>
     );
