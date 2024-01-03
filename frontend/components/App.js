@@ -8,6 +8,7 @@ export default class App extends React.Component {
     todos: [],
     error: "",
     toDoInput: "",
+    displayCompleated: true,
   };
 
   // Update the state with the input value when there's a change in the input field
@@ -68,6 +69,10 @@ export default class App extends React.Component {
     })
     .catch(this.axiosError)
   }
+  
+  toggleDisplayCompleted = () => {
+  this.setState({ ...this.state, displayCompleated: !this.state.displayCompleated })
+  }
 
   // Fetch all todos when the component mounts
   componentDidMount() {
@@ -96,10 +101,9 @@ export default class App extends React.Component {
             placeholder="add here"
           />
           <button type="submit">Add</button>
-          <button type="button" onClick={this.resetForm}>
-            Reset
-          </button>
+          
         </form>
+        <button onClick={this.toggleDisplayCompleted}> {this.state.displayCompleated ? 'Hide' : 'Show'} Reset </button>
       </div>
     );
   }
