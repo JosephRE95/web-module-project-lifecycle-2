@@ -29,16 +29,20 @@ export default class App extends React.Component {
 
   // Add a new todo item by making a POST request to the API
   postNewTodo = () => {
-    axios.post(URL, { name: this.state.toDoInput })
-    .then( res => {
-      // Update todos state by concatenating the new todo item
-      this.setState({ ...this.state, todos: this.state.todos.concat(res.data.data)})
-      this.resetForm(); // Reset the form after adding a todo
-    })
-    .catch(
-      this.axiosError // Catch any errors and update the error state
-    )
-  }
+    axios
+      .post(URL, { name: this.state.toDoInput })
+      .then((res) => {
+        // Update todos state by concatenating the new todo item
+        this.setState({
+          ...this.state,
+          todos: this.state.todos.concat(res.data.data),
+        });
+        this.resetForm(); // Reset the form after adding a todo
+      })
+      .catch(
+        this.axiosError // Catch any errors and update the error state
+      );
+  };
 
   // Handle form submission
   onTodoFormSubmit = (evt) => {
@@ -57,22 +61,27 @@ export default class App extends React.Component {
       .catch(this.axiosError); // Catch any errors and update the error state
   };
 
-  toggleCompleted = id => () => {
-    axios.patch(`${URL}/${id}`)
-    .then(res => {
-      this.setState({ ...this.state, todos: this.state.todos.map(td => {
-        
-        if (td.id !== id ) return td
-        return res.data.data
-       }) 
+  toggleCompleted = (id) => () => {
+    axios
+      .patch(`${URL}/${id}`)
+      .then((res) => {
+        this.setState({
+          ...this.state,
+          todos: this.state.todos.map((td) => {
+            if (td.id !== id) return td;
+            return res.data.data;
+          }),
+        });
       })
-    })
-    .catch(this.axiosError)
-  }
-  
+      .catch(this.axiosError);
+  };
+
   toggleDisplayCompleted = () => {
-  this.setState({ ...this.state, displayCompleated: !this.state.displayCompleated })
-  }
+    this.setState({
+      ...this.state,
+      displayCompleated: !this.state.displayCompleated,
+    });
+  };
 
   // Fetch all todos when the component mounts
   componentDidMount() {
@@ -86,11 +95,19 @@ export default class App extends React.Component {
           {this.state.error && <span>Error: {this.state.error}</span>}
         </div>
 
+       
         <div className="todos">
           <h2>Todos:</h2>
-          {this.state.todos.map((td) => {
-            return <div key={td.id} onClick={this.toggleCompleted(td.id)}>{td.name}{td.completed ? "✓" : '' }</div>
-          })}
+          {this.state.todos.reduce((acc, td) => {
+            if (this.state.displayCompleated || !td.completed) {
+              return acc.concat(
+                <div key={td.id} onClick={this.toggleCompleted(td.id)}>
+                  {td.name} {td.completed ? "✓" : ""}
+                </div>
+              );
+            }
+            return acc;
+          }, [])}
         </div>
 
         <form onSubmit={this.onTodoFormSubmit}>
@@ -101,9 +118,11 @@ export default class App extends React.Component {
             placeholder="add here"
           />
           <button type="submit">Add</button>
-          
         </form>
-        <button onClick={this.toggleDisplayCompleted}> {this.state.displayCompleated ? 'Hide' : 'Show'} Reset </button>
+        <button onClick={this.toggleDisplayCompleted}>
+          
+          {this.state.displayCompleated ? "Hide" : "Show"} Completed
+        </button>
       </div>
     );
   }
